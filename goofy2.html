@@ -19,7 +19,41 @@
             overflow: hidden;
         }
 
-        /* Contenedor del video en pantalla completa */
+        /* Pantalla de inicio para desbloquear el audio del navegador */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .intro-btn {
+            background: transparent;
+            color: #00ffcc;
+            border: 3px solid #00ffcc;
+            padding: 20px 40px;
+            font-size: 1.8rem;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px #00ffcc;
+            transition: all 0.2s ease;
+        }
+
+        .intro-btn:hover {
+            background: #00ffcc;
+            color: #000;
+            box-shadow: 0 0 30px #00ffcc;
+        }
+
+        /* Contenedor del video */
         .video-container {
             position: absolute;
             top: 0;
@@ -27,17 +61,15 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            cursor: pointer;
         }
 
         iframe {
             width: 100%;
             height: 100%;
             border: none;
-            pointer-events: none; /* Permite que el click caiga en el contenedor superior */
+            pointer-events: none; /* Bloquea controles nativos de YT */
         }
 
-        /* Capa invisible para detectar el click sobre el video */
         .click-overlay {
             position: absolute;
             top: 0;
@@ -46,9 +78,10 @@
             height: 100%;
             z-index: 2;
             background: transparent;
+            cursor: pointer;
         }
 
-        /* Pantalla de "Susto" Oculta por defecto */
+        /* Pantalla Tenebrosa */
         .scare-screen {
             display: none;
             position: fixed;
@@ -75,11 +108,10 @@
             margin-bottom: 40px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
             max-width: 800px;
         }
 
-        /* Botones de decisión */
         .btn-container {
             display: flex;
             gap: 20px;
@@ -107,11 +139,10 @@
             font-weight: bold;
         }
 
-        /* Estilo sutil para el footer del creador */
         .creator-tag {
             position: absolute;
             bottom: 10px;
-            color: #222;
+            color: #111;
             font-size: 0.8rem;
             z-index: 11;
         }
@@ -119,14 +150,19 @@
 </head>
 <body>
 
-    <!-- Sección del Video -->
-    <div class="video-container" id="videoContainer">
-        <div class="click-overlay" id="clickOverlay"></div>
-        <!-- Video embebido configurado para reproducirse automáticamente, silenciado (política de navegadores) y en bucle -->
-        <iframe id="ytPlayer" src="https://www.youtube.com/embed/CT_cPu74ZnU?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=CT_cPu74ZnU&controls=0&rel=0" allow="autoplay"></iframe>
+    <!-- Pantalla de Entrada obligatoria para activar el audio -->
+    <div class="intro-screen" id="introScreen">
+        <button class="intro-btn" id="introBtn">Ver Reels de Obra 🏗️</button>
     </div>
 
-    <!-- Sección Tenebrosa (Pantalla Negra) -->
+    <!-- Sección del Video -->
+    <div class="video-container">
+        <div class="click-overlay" id="clickOverlay"></div>
+        <!-- Removimos el "mute=1" para que cargue con sonido full -->
+        <div id="player"></div>
+    </div>
+
+    <!-- Sección Tenebrosa -->
     <div class="scare-screen" id="scareScreen">
         <h1>¿Acaso no te gustan los reels y quieres volver a estudiar?</h1>
         
@@ -134,46 +170,80 @@
             <a href="index.html" class="btn">Sí, soy puto y quiero sacar una carrera</a>
             <button class="btn" id="btnNo">No</button>
         </div>
-
-        <!-- Audio Tenebroso Embebido (Música de ambiente de terror de fondo sin copyright) -->
-        <iframe id="scaryAudio" src="" allow="autoplay" style="display:none"></iframe>
     </div>
 
     <div class="creator-tag">App created by Juanech5</div>
 
+    <!-- Cargamos la API oficial de Iframe de YouTube para controlar volumen de forma exacta -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <script>
+        let player;
+        const introScreen = document.getElementById('introScreen');
+        const introBtn = document.getElementById('introBtn');
         const overlay = document.getElementById('clickOverlay');
         const scareScreen = document.getElementById('scareScreen');
         const btnNo = document.getElementById('btnNo');
-        const scaryAudio = document.getElementById('scaryAudio');
-        const ytPlayer = document.getElementById('ytPlayer');
 
-        // Función para activar la pantalla negra y la música
-        function triggerScare() {
-            scareScreen.classList.add('active');
-            // Pausa el video de YouTube mandando un comando a su API de iframe
-            ytPlayer.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-            // Carga una pista de audio ambiental de terror por defecto para el efecto dramático
-            scaryAudio.src = "https://www.youtube.com/embed/A413Z_u0Xv0?autoplay=1";
+        // Inicializa el reproductor de YouTube a través de la API
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'CT_cPu74ZnU',
+                playerVars: {
+                    'autoplay': 0, // No arranca hasta que den click al botón de inicio
+                    'controls': 0,
+                    'rel': 0,
+                    'loop': 1,
+                    'playlist': 'CT_cPu74ZnU'
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
         }
 
-        // Detectar Click en cualquier parte del video
+        function onPlayerReady(event) {
+            // Setea el volumen interno de YouTube al 100% de manera forzada
+            player.setVolume(100); 
+        }
+
+        // Al hacer click en el botón de entrada, se desbloquea el contexto de audio y arranca
+        introBtn.addEventListener('click', function() {
+            introScreen.style.display = 'none';
+            if (player && typeof player.playVideo === 'function') {
+                player.unMute();
+                player.setVolume(100);
+                player.playVideo();
+            }
+        });
+
+        // Activar la pantalla negra
+        function triggerScare() {
+            scareScreen.classList.add('active');
+            if (player && typeof player.pauseVideo === 'function') {
+                player.pauseVideo();
+            }
+        }
+
+        // Detectores para la pantalla negra (Click o Espacio)
         overlay.addEventListener('click', triggerScare);
 
-        // Detectar Barra de Espacio
         window.addEventListener('keydown', function(e) {
             if (e.code === "Space" || e.keyCode === 32) {
-                e.preventDefault(); // Evita el scroll por defecto de la barra espaciadora
+                e.preventDefault();
                 triggerScare();
             }
         });
 
-        // Botón "No" reinicia todo y vuelve al video
+        // Botón "No" regresa al video con volumen al máximo
         btnNo.addEventListener('click', function() {
             scareScreen.classList.remove('active');
-            scaryAudio.src = ""; // Detiene la música tenebrosa
-            // Reanuda el video de YouTube
-            ytPlayer.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            if (player && typeof player.playVideo === 'function') {
+                player.setVolume(100);
+                player.playVideo();
+            }
         });
     </script>
 </body>
