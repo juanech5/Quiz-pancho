@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚨 MOMENTO OBRA VIA VIARIA 🚨</title>
+    <style>
+        /* Estilos Globales Goofy */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #ff00ff; /* Rosa chillón */
+            background-image: 
+                linear-gradient(45deg, #00ffff 25%, transparent 25%), 
+                linear-gradient(-45deg, #00ffff 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #00ffff 75%), 
+                linear-gradient(-45deg, transparent 75%, #00ffff 75%);
+            background-size: 40px 40px;
+            background-position: 0 0, 0 20px, 20px -20px, -20px 0;
+            font-family: "Comic Sans MS", "Chalkboard SE", sans-serif;
+            color: #000;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+        }
+
+        /* Barra de peligro animada */
+        .hazard-bar {
+            background: repeating-linear-gradient(
+                -45deg,
+                #000,
+                #000 20px,
+                #ffcc00 20px,
+                #ffcc00 40px
+            );
+            height: 30px;
+            width: 100%;
+            animation: slide 2s linear infinite;
+        }
+
+        @keyframes slide {
+            from { background-position: 0 0; }
+            to { background-position: 57px 0; }
+        }
+
+        /* Contenedor Principal */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Tarjeta Brainrot */
+        .card {
+            background: #fff;
+            border: 8px ridge #00ff00;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 15px 15px 0px #000;
+            transform: rotate(-1deg);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: rotate(2deg) scale(1.02);
+        }
+
+        /* Título */
+        h1 {
+            font-size: 2.5rem;
+            color: #ff0000;
+            text-shadow: 3px 3px 0px #ffcc00;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            animation: blink 0.8s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            100% { opacity: 0.7; transform: scale(0.98); }
+        }
+
+        /* Galería de Memes (Responsiva) */
+        .meme-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .meme-box {
+            background: #000;
+            border: 4px dashed #ff00ff;
+            padding: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .meme-box img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            filter: contrast(150%) saturate(180%); /* Efecto Dank */
+            transition: all 0.5s ease;
+        }
+
+        .meme-box img:hover {
+            filter: invert(1);
+            transform: spin;
+        }
+
+        .meme-caption {
+            background: #fff;
+            color: #000;
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 5px;
+            margin-top: 5px;
+        }
+
+        /* Texto Flotante */
+        .subtext {
+            font-size: 1.2rem;
+            background: #ffff00;
+            display: inline-block;
+            padding: 5px 10px;
+            border: 2px solid #000;
+            margin-top: 10px;
+        }
+
+        /* Footer */
+        footer {
+            background: #000;
+            color: #fff;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.1rem;
+            border-top: 5px solid #ffcc00;
+            letter-spacing: 2px;
+        }
+
+        footer span {
+            color: #00ffff;
+            animation: rainbow 2s infinite linear;
+        }
+
+        /* Animaciones extra goofy */
+        .spinning-hardhat {
+            font-size: 3rem;
+            display: inline-block;
+            animation: spin 1.5s infinite linear;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsividad para pantallas chicas */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.8rem; }
+            .card { padding: 15px; box-shadow: 8px 8px 0px #000; }
+            body { background-size: 20px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hazard-bar"></div>
+
+    <main>
+        <div class="card">
+            <span class="spinning-hardhat">👷‍♂️</span>
+            <h1>¡ESTAMOS TRABAJANDO PARA USTED!</h1>
+            <p style="font-weight: bold;">Mi compa el inge metiéndole mano al código fuente de la Matrix.</p>
+            
+            <div class="meme-grid">
+                <div class="meme-box">
+                    <img src="https://picsum.photos/id/1067/300/300" alt="Albañilería extrema">
+                    <div class="meme-caption">Ingeniería nivel Dios 🧠🔥</div>
+                </div>
+                <div class="meme-box">
+                    <img src="https://picsum.photos/id/1072/300/300" alt="Maquinaria pesada chistosa">
+                    <div class="meme-caption">Cuando usas el 100% del cerebro 🏗️⚡</div>
+                </div>
+            </div>
+
+            <div class="subtext">🚨 Se viene cositas (si no se cae el servidor) 🚨</div>
+        </div>
+    </main>
+
+    <div class="hazard-bar"></div>
+
+    <footer>
+        App created by <span>Juanech5</span>
+    </footer>
+
+</body>
+</html>
+  
