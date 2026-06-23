@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hola pancho</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+        }
+
+        /* Contenedor del video en pantalla completa */
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            pointer-events: none; /* Permite que el click caiga en el contenedor superior */
+        }
+
+        /* Capa invisible para detectar el click sobre el video */
+        .click-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            background: transparent;
+        }
+
+        /* Pantalla de "Susto" Oculta por defecto */
+        .scare-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 10;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .scare-screen.active {
+            display: flex;
+        }
+
+        h1 {
+            color: #ff0000;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+            max-width: 800px;
+        }
+
+        /* Botones de decisión */
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            background: #111;
+            color: #fff;
+            border: 2px solid #333;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #ff0000;
+            color: #000;
+            border-color: #ff0000;
+            box-shadow: 0 0 15px #ff0000;
+            font-weight: bold;
+        }
+
+        /* Estilo sutil para el footer del creador */
+        .creator-tag {
+            position: absolute;
+            bottom: 10px;
+            color: #222;
+            font-size: 0.8rem;
+            z-index: 11;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sección del Video -->
+    <div class="video-container" id="videoContainer">
+        <div class="click-overlay" id="clickOverlay"></div>
+        <!-- Video embebido configurado para reproducirse automáticamente, silenciado (política de navegadores) y en bucle -->
+        <iframe id="ytPlayer" src="https://www.youtube.com/embed/CT_cPu74ZnU?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=CT_cPu74ZnU&controls=0&rel=0" allow="autoplay"></iframe>
+    </div>
+
+    <!-- Sección Tenebrosa (Pantalla Negra) -->
+    <div class="scare-screen" id="scareScreen">
+        <h1>¿Acaso no te gustan los reels y quieres volver a estudiar?</h1>
+        
+        <div class="btn-container">
+            <a href="index.html" class="btn">Sí, soy puto y quiero sacar una carrera</a>
+            <button class="btn" id="btnNo">No</button>
+        </div>
+
+        <!-- Audio Tenebroso Embebido (Música de ambiente de terror de fondo sin copyright) -->
+        <iframe id="scaryAudio" src="" allow="autoplay" style="display:none"></iframe>
+    </div>
+
+    <div class="creator-tag">App created by Juanech5</div>
+
+    <script>
+        const overlay = document.getElementById('clickOverlay');
+        const scareScreen = document.getElementById('scareScreen');
+        const btnNo = document.getElementById('btnNo');
+        const scaryAudio = document.getElementById('scaryAudio');
+        const ytPlayer = document.getElementById('ytPlayer');
+
+        // Función para activar la pantalla negra y la música
+        function triggerScare() {
+            scareScreen.classList.add('active');
+            // Pausa el video de YouTube mandando un comando a su API de iframe
+            ytPlayer.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            // Carga una pista de audio ambiental de terror por defecto para el efecto dramático
+            scaryAudio.src = "https://www.youtube.com/embed/A413Z_u0Xv0?autoplay=1";
+        }
+
+        // Detectar Click en cualquier parte del video
+        overlay.addEventListener('click', triggerScare);
+
+        // Detectar Barra de Espacio
+        window.addEventListener('keydown', function(e) {
+            if (e.code === "Space" || e.keyCode === 32) {
+                e.preventDefault(); // Evita el scroll por defecto de la barra espaciadora
+                triggerScare();
+            }
+        });
+
+        // Botón "No" reinicia todo y vuelve al video
+        btnNo.addEventListener('click', function() {
+            scareScreen.classList.remove('active');
+            scaryAudio.src = ""; // Detiene la música tenebrosa
+            // Reanuda el video de YouTube
+            ytPlayer.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+        });
+    </script>
+</body>
+</html>
